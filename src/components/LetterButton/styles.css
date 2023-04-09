@@ -1,0 +1,13 @@
+.letter-button {
+    background-color: white;
+    margin: 5px;
+}
+
+.letter-button:hover {
+    background-color: rgb(216, 216, 216);
+    margin: 5px;
+}
+
+h3 {
+    margin: 2px;
+}

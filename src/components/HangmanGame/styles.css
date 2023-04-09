@@ -1,7 +1,25 @@
 .hangman-game {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+}
+
+.hangman-game__title  {
+    color: white;   
+
+}
+
+.hangman-game__controls {
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-areas: "a a a a a a a";
     
 }
 
 canvas {
-    background-color: white;
+    background-color: skyblue;
+    
 }
