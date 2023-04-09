@@ -1,11 +1,9 @@
-import { bigStringOfWords } from "../../api/wordsList";
 import LetterButton from "../LetterButton";
 import "./styles.css";
 const { useState, useRef, useEffect } = require("react");
 
 const HangmanGame = () => {
-  const rdmWords = bigStringOfWords;
-  const randomWord = rdmWords.split(' ').filter((w) => {return w.length > 4})[(Math.floor(Math.random() * rdmWords.length))];
+//   const randomWord = rdmWords.split(' ').filter((w) => {return w.length > 4})[(Math.floor(Math.random() * rdmWords.length))];
   const [title, setTitle] = useState("Hangman");
   const [gameState, setGameState] = useState(1);
   const [incorrectGuesses, setIncorrectGuesses] = useState([]);
