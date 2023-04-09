@@ -6,24 +6,38 @@ const { useState, useRef, useEffect } = require("react");
 const HangmanGame = () => {
   const rdmWords = bigStringOfWords;
   const randomWord = rdmWords.split(' ').filter((w) => {return w.length > 4})[(Math.floor(Math.random() * rdmWords.length))];
+  const [title, setTitle] = useState("Hangman");
   const [gameState, setGameState] = useState(1);
   const [incorrectGuesses, setIncorrectGuesses] = useState([]);
-  console.log(incorrectGuesses);
   const [correctGuesses, setCorrectGuesses] = useState([]);
-  const [word, setWord] = useState("");
+  const [word, setWord] = useState('PIZZA');
   const [letters, setLetters] = useState(
-    "ABCDEFGHJIKLMNOPQRSTUVWXYZ".split("")
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
   );
+  const [displayWord, setDisplayWord] = useState(word.split("").map(() => "_"));
 
-console.log(rdmWords.split(' ').filter((w) => {return w.length > 4})[Math.floor(2.2)])
-console.log(randomWord);
   const startGame = () => {
     setGameState(1);
   };
 
+
   const handleGameTurn = (letter) => {
+    if (correctGuesses.length === word.length && word.length > 0 || incorrectGuesses.length >= 6) {
+      return;
+    }
     if (word.includes(letter)) {
+      const newDisplayWord = [...displayWord];
+      for (let i = 0; i < word.length; i++) {
+        if (word[i] === letter) {
+          newDisplayWord[i] = letter;
+        }
+      }
       setCorrectGuesses([...correctGuesses, letter]);
+      if(newDisplayWord.join('') === word){
+        setTitle("You Win!")
+      }
+      console.log(newDisplayWord)
+      setDisplayWord(newDisplayWord);
     } else {
       setIncorrectGuesses([...incorrectGuesses, letter]);
     }
@@ -34,6 +48,8 @@ console.log(randomWord);
   const height = 500;
 
   useEffect(() => {
+
+ 
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
     context.clearRect(0, 0, width, height);
@@ -45,7 +61,6 @@ console.log(randomWord);
         break;
       case 1:
         function hangNoose() {
-          // the hang thing
           context.beginPath();
           context.moveTo(100, 55);
           context.lineTo(100, 435);
@@ -79,6 +94,7 @@ console.log(randomWord);
             context.stroke();
           }
 
+         
           if (incorrectGuesses.length >= 4) {
             // left leg
             context.moveTo(200, 250);
@@ -94,6 +110,7 @@ console.log(randomWord);
           }
 
           if (incorrectGuesses.length >= 6) {
+            setTitle("You Lose!")
             // left arm
             context.moveTo(200, 155);
             context.lineTo(225, 200);
@@ -102,13 +119,29 @@ console.log(randomWord);
         }
 
         function usedLetterBox() {
-          context.beginPath();
-          context.rect(700, 35, 250, 400);
-          context.stroke();
-        }
+            context.beginPath();
+            context.rect(700, 35, 250, 400);
+            context.stroke();
+            context.font = "24px serif";
+            context.fillText("Used Letters:", 730, 75);
+            context.fillText(
+              incorrectGuesses.join(" "),
+              730,
+              120,
+              200
+            );
+          }
 
+        //   function guessWord() {
+        //     context.font = "48px serif";
+        //     context.fillText(displayWord.join(''), width / 2 - 200, height / 2);
+        //   }
+          
+        // guessWord();
         hangNoose();
         hangman();
+        usedLetterBox();
+
 
       default:
         break;
@@ -117,7 +150,7 @@ console.log(randomWord);
 
   return (
     <div className="hangman-game">
-      <h1 className="hangman-game__title">Hangman</h1>
+      <h1 className="hangman-game__title">{title}</h1>
       <canvas
         onClick={() => {
           startGame();
@@ -126,6 +159,10 @@ console.log(randomWord);
         width={width}
         height={height}
       ></canvas>
+      <h1 style={{
+        color: "white",
+        letterSpacing: "5px"
+      }}>{displayWord.join('')}</h1>
       {gameState ? (
         <div className="hangman-game__controls">
           {letters.map((letter, i) => {
@@ -142,6 +179,6 @@ console.log(randomWord);
       ) : null}
     </div>
   );
-};
+        }
 
-export default HangmanGame;
+        export default HangmanGame;
