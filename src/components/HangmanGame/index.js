@@ -1,3 +1,4 @@
+import { getHangmanWord } from "../../api/getHangmanWord";
 import LetterButton from "../LetterButton";
 import "./styles.css";
 const { useState, useRef, useEffect } = require("react");
@@ -5,22 +6,27 @@ const { useState, useRef, useEffect } = require("react");
 const HangmanGame = () => {
 //   const randomWord = rdmWords.split(' ').filter((w) => {return w.length > 4})[(Math.floor(Math.random() * rdmWords.length))];
   const [title, setTitle] = useState("Hangman");
-  const [gameState, setGameState] = useState(1);
+  const [gameState, setGameState] = useState(0);
   const [incorrectGuesses, setIncorrectGuesses] = useState([]);
   const [correctGuesses, setCorrectGuesses] = useState([]);
-  const [word, setWord] = useState('PIZZA');
+  const [word, setWord] = useState('');
   const [letters, setLetters] = useState(
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("")
   );
   const [displayWord, setDisplayWord] = useState(word.split("").map(() => "_"));
+  console.log(displayWord)
 
   const startGame = () => {
-    setGameState(1);
+    getHangmanWord().then((word) => {
+        console.log(word[0])
+        setWord(word[0].toUpperCase());
+        setGameState(1);
+    })
   };
 
 
   const handleGameTurn = (letter) => {
-    if (correctGuesses.length === word.length && word.length > 0 || incorrectGuesses.length >= 6) {
+    if (correctGuesses.indexOf(letter) > -1 || correctGuesses.length === word.length && word.length > 0 || incorrectGuesses.length >= 6) {
       return;
     }
     if (word.includes(letter)) {
@@ -52,12 +58,6 @@ const HangmanGame = () => {
     const context = canvas.getContext("2d");
     context.clearRect(0, 0, width, height);
 
-    switch (gameState) {
-      case 0:
-        context.font = "48px serif";
-        context.fillText("Click to start game!", width / 2 - 200, height / 2);
-        break;
-      case 1:
         function hangNoose() {
           context.beginPath();
           context.moveTo(100, 55);
@@ -116,6 +116,15 @@ const HangmanGame = () => {
           }
         }
 
+        function clickToStart(){
+            if(!gameState){
+                context.font = "48px serif";
+                context.fillText("Click to start game!", width / 2 - 200, height / 2);
+
+            }
+           
+        }
+
         function usedLetterBox() {
             context.beginPath();
             context.rect(700, 35, 250, 400);
@@ -129,22 +138,14 @@ const HangmanGame = () => {
               200
             );
           }
-
-        //   function guessWord() {
-        //     context.font = "48px serif";
-        //     context.fillText(displayWord.join(''), width / 2 - 200, height / 2);
-        //   }
-          
-        // guessWord();
+        clickToStart(); 
         hangNoose();
         hangman();
         usedLetterBox();
 
 
-      default:
-        break;
-    }
-  }, [incorrectGuesses]);
+ 
+  }, [incorrectGuesses, gameState]);
 
   return (
     <div className="hangman-game">
@@ -166,6 +167,7 @@ const HangmanGame = () => {
           {letters.map((letter, i) => {
             return (
               <LetterButton
+                key={i}
                 letter={letter}
                 handler={() => {
                   handleGameTurn(letter);
